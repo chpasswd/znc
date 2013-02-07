@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Znc by chpasswd</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Znc</h1>
+        <h2>Modified mirror for BlackZNC community.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/chpasswd/znc/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/chpasswd/znc/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/chpasswd/znc" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>Table of contents</h2>
+
+<ul>
+<li>Minimal Requirements</li>
+<li>Optional Requirements</li>
+<li>Installing ZNC</li>
+<li>Setting up znc.conf</li>
+<li>Special config options</li>
+<li>Using ZNC</li>
+<li>File Locations</li>
+<li>ZNC's config file</li>
+<li>Writing own modules</li>
+<li>Further infos</li>
+</ul><h2>Minimal Requirements</h2>
+
+<p>Core:</p>
+
+<ul>
+<li>GNU make (try gmake if make fails)</li>
+<li>GCC 3 or later</li>
+</ul><h2>Optional Requirements</h2>
+
+<p>SSL support:</p>
+
+<ul>
+<li>openssl 0.9.7d or later (try installing openssl-dev, openssl-devel or
+libssl-dev)</li>
+</ul><p>modperl:</p>
+
+<ul>
+<li>This needs perl and its bundled libperl</li>
+</ul><p>modpython:</p>
+
+<ul>
+<li>This needs perl(!) and python's bundled libpython</li>
+</ul><p>saslauth:</p>
+
+<ul>
+<li>This module needs cyrus-sasl2</li>
+</ul><h2>Installing ZNC</h2>
+
+<p>Installation is done with the <code>./configure ; make ; make install</code> commands.</p>
+
+<p>If you are building from git, you will need to run <code>./autogen.sh</code> first to produce the <code>configure</code> script.
+Note that this requires <code>automake</code> to be installed.</p>
+
+<p>You can use
+    ./configure --help
+if you want to get a list of options, though the defaults should be suiting
+most needs. After you compiled it with make (or gmake if make doesn't work) you
+can install it with
+    make install
+though you don't need to as ZNC supports in-place execution.</p>
+
+<h2>Setting up znc.conf</h2>
+
+<p>For setting up a configuration file in <code>~/.znc</code> you can simply do
+    znc --makeconf
+or
+    ./znc --makeconf
+for in-place execution.</p>
+
+<p>If you are using SSL you should do
+    znc --makepem</p>
+
+<h2>Special config options</h2>
+
+<p>When you create your ZNC configuration file via --makeconf, you are asked two
+questions which might not be easy to understand.</p>
+
+<blockquote>
+<p>Number of lines to buffer per channel</p>
+</blockquote>
+
+<p>How many messages should be buffered for each channel. When you connect to ZNC
+you get a buffer replay for each channel which shows what was said last. This
+option selects the number of lines this replay should consist of. Increasing
+this can greatly increase ZNC's memory usage if you are hosting many users.
+The default value should be fine for most setups.</p>
+
+<blockquote>
+<p>Would you like to keep buffers after replay?</p>
+</blockquote>
+
+<p>If this is disabled, you get the buffer playback only once and then it is
+deleted. If this is enabled, the buffer is not deleted. This may be useful if
+you regularly use more than one client to connect to ZNC.</p>
+
+<h2>Using ZNC</h2>
+
+<p>Once you have started ZNC you can connect with your favorite IRC-client to ZNC.
+You should use <code>username:password</code> as the server password (e.g. <code>/pass user:pass</code>).</p>
+
+<p>Once you are connected you can do <code>/msg *status help</code> for some commands.
+Every module you have loaded (<code>/msg *status listmods</code>) should additionally provide
+    /msg *modulename help</p>
+
+<h2>File Locations</h2>
+
+<p>In its data dir (<code>~/.znc</code> is default) ZNC saves most of its data. The only
+exception are modules and module data, which are saved in <code>&lt;prefix&gt;/lib/znc</code>
+and <code>&lt;prefix&gt;/share/znc</code>, and the znc binary itself.
+More modules (e.g. if you install some later) can be saved in
+<code>&lt;data dir&gt;/modules</code> (-&gt; <code>~/.znc/modules</code>).</p>
+
+<p>In the datadir are only two files:</p>
+
+<ul>
+<li>
+<code>znc.pid</code> - The pid of the currently running ZNC instance.</li>
+<li>
+<code>znc.pem</code> - This is the server certificate ZNC uses for listening and is created
+with <code>znc --makepem</code>.</li>
+</ul><p>These directories are also in there:</p>
+
+<ul>
+<li>configs - Contains <code>znc.conf</code> (ZNC's config file) and backups of older configs.</li>
+<li>modules - ZNC also looks in here for a module.</li>
+<li>moddata - Global modules save their settings here.
+(e.g. webadmin saves the current skin name in here)</li>
+<li>users   - This is per-user data and mainly contains just a moddata directory.</li>
+</ul><h2>ZNC's config file</h2>
+
+<p>This file shouldn't be too hard too understand. An explanation of all the
+items can be found on the <a href="http://wiki.znc.in/Configuration">Configuration</a>-Page.
+Warning: better not to edit config, while ZNC is running.</p>
+
+<p>To rehash the config file, you can send ZNC SIGHUP via
+    pkill -SIGHUP znc
+or you can login to ZNC and use
+    /msg *status rehash</p>
+
+<p>If you changed some settings while ZNC is running, a simple
+    pkill -SIGUSR1 znc
+will make ZNC rewrite its config file. Alternatively you can use this:
+    /msg *status saveconfig</p>
+
+<h2>Writing own modules</h2>
+
+<p>You can write your own modules in either C++, python or perl.</p>
+
+<p>C++ modules are compiled by either saving them in the modules source dir and
+running make or with the znc-buildmod shell script.</p>
+
+<p>For additional info look in the wiki:</p>
+
+<ul>
+<li><a href="http://wiki.znc.in/Writing_modules">Writing modules</a></li>
+</ul><p>Perl modules are loaded through the global module <a href="http://wiki.znc.in/Modperl">ModPerl</a>.</p>
+
+<p>Python modules are loaded through the global module <a href="http://wiki.znc.in/Modpython">ModPython</a>.</p>
+
+<h2>Further infos</h2>
+
+<p>Please visit <a href="http://znc.in/">http://znc.in/</a> or #znc on EFNet if you still have questions.</p>
+
+<p>You can get the latest development version with git:
+    git clone git://github.com/znc/znc.git</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
