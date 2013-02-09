@@ -1,0 +1,15 @@
+
+textarea.monospace {
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.yesnobutton {
+	float: left;
+	width: 110px;
+	padding-top: 10px;
+}
+
+.yesnobutton input {
+	width: 100px;
+}
+
